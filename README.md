@@ -53,21 +53,36 @@ GECKODRIVER_PATH = '/home/tommy/.cache/selenium/geckodriver/linux64/0.35.0/gecko
 Your format will depend on your operating system, e.g. on windows it may be like `GECKODRIVER_PATH = 'C:/Users/tommy/Downloads/0.35.0/geckodriver.exe'` or something like that. if you are on Windows, you will likely be default get a format like C:\Users\tommy\Downloads\0.35.0\geckodriver.exe. you need to replace all of those \ with /, so that it looks like the above example. 
 
 
-Then, you need to go to discord, and create a webhook in a server you own ( make a server if you dont have one )
+Then, you need to configure at least one notification method — Discord, Pushover, or both.
+
+## Discord
+
+Go to Discord and create a webhook in a server you own ( make a server if you don't have one ).
 You can do that by going to the server, right clicking a channel -> edit channel -> integrations -> webhooks -> new webhook -> copy webhook url
 
-Then open up scrapedmv.py in a text editor, and replace the line that says this:
-```python
-YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL", "YOUR_WEBHOOK_URL_HERE") # !!! REPLACE WITH YOUR ACTUAL WEBHOOK URL !!!
-```
-
-with your webhook url, like this:
+Then open up scrapedmv.py in a text editor and set your webhook URL:
 
 ```python
-YOUR_DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/10920931091/-JAOIFJWjenirieojOAJOIWjonfrreywoijojwojoOIAJODAab3" # !!! REPLACE WITH YOUR ACTUAL WEBHOOK URL !!!
+YOUR_DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/10920931091/-JAOIFJWjenirieojOAJOIWjonfrreywoijojwojoOIAJODAab3"
 ```
 
-( that is not a real webhook url to be clear ) ( do notice the quotes around the webhook URL, those are necessary. )
+( that is not a real webhook url to be clear )
+
+## Pushover
+
+If you prefer Pushover notifications on your phone, create a free account at https://pushover.net, then create an application there to get an API token. You'll need two values:
+
+- **User Key** — shown on your Pushover dashboard
+- **API Token** — shown on the application page you created
+
+Set them in scrapedmv.py:
+
+```python
+PUSHOVER_USER_KEY = "your_user_key_here"
+PUSHOVER_API_TOKEN = "your_api_token_here"
+```
+
+You only need one notification method set up — Discord, Pushover, or both will work.
 
 Then, you just run `python3 scrapedmv.py`, and every 10 minutes or so it will start the scraping process. That is all you have to do to get it up and running!
 
@@ -188,9 +203,14 @@ PROOF_OF_LIFE = True
 
 # Docker
 
-In order to run a pre-built image
+In order to run a pre-built image with Discord notifications:
 ```bash
 docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" ghcr.io/benw5483/nc-dmv-scraper:latest
+```
+
+Or with Pushover notifications:
+```bash
+docker run -e PUSHOVER_USER_KEY="YOUR_USER_KEY" -e PUSHOVER_API_TOKEN="YOUR_API_TOKEN" ghcr.io/benw5483/nc-dmv-scraper:latest
 ```
 
 To run via docker with custom filtering arguments, you would do, for example:
@@ -228,8 +248,10 @@ services:
     image: ghcr.io/benw5483/nc-dmv-scraper:latest
     container_name: nc-dmv-scraper
     environment:
-      # --- IMPORTANT: Update this ---
+      # --- Notifications (set at least one) ---
       YOUR_DISCORD_WEBHOOK_URL: "YOUR_WEBHOOK_URL_HERE"
+      # PUSHOVER_USER_KEY: "your_pushover_user_key_here"
+      # PUSHOVER_API_TOKEN: "your_pushover_app_token_here"
 
       # --- Extra Configuration ---
       APPOINTMENT_TYPE: "Driver License - First Time"
