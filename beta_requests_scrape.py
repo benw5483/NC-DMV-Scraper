@@ -14,6 +14,8 @@ import random
 
 # --- Notification Settings ---
 YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL", "YOUR_WEBHOOK_URL_HERE")
+PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
+PUSHOVER_API_TOKEN = os.getenv("PUSHOVER_API_TOKEN")
 PROOF_OF_LIFE = os.getenv("PROOF_OF_LIFE", "False").lower() == 'true'
 INTRO_MESSAGE = os.getenv("INTRO_MESSAGE", "@everyone NCDMV Appointments Found at https://skiptheline.ncdot.gov/:\n")
 MAX_DISCORD_MESSAGE_LENGTH = 1950
@@ -413,6 +415,39 @@ def send_discord_notification(webhook_url, message_content_to_send):
         print("Failed to send all/some notification chunks.")
 
 
+def send_pushover_notification(message_content):
+    if not PUSHOVER_USER_KEY or not PUSHOVER_API_TOKEN:
+        return
+
+    if message_content is None:
+        if PROOF_OF_LIFE:
+            message = "No valid NCDMV appointments found at this time matching your criteria."
+        else:
+            return
+    else:
+        message = INTRO_MESSAGE + message_content
+
+    # Pushover enforces a 1024 character message limit
+    if len(message) > 1024:
+        message = message[:1021] + "..."
+
+    try:
+        response = requests.post(
+            "https://api.pushover.net/1/messages.json",
+            data={
+                "token": PUSHOVER_API_TOKEN,
+                "user": PUSHOVER_USER_KEY,
+                "message": message,
+                "title": "NC DMV Appointments",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+        print("Pushover notification sent successfully.")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending Pushover notification: {e}")
+
+
 def get_appointments(all_locations_master_data, configs):
     appointment_type_display_name = configs['appointment_type']
     current_form_journey = configs['form_journey']
@@ -721,8 +756,10 @@ if __name__ == "__main__":
 
             if notification_payload_data:
                 send_discord_notification(YOUR_DISCORD_WEBHOOK_URL, notification_payload_data)
+                send_pushover_notification(notification_payload_data)
             else:
                 send_discord_notification(YOUR_DISCORD_WEBHOOK_URL, None)
+                send_pushover_notification(None)
             random_offset = random.uniform(random_offset_min_s, random_offset_max_s)
             total_sleep_seconds = base_interval_seconds + random_offset
             if total_sleep_seconds < 1:

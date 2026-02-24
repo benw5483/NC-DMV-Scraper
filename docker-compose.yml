@@ -1,14 +1,18 @@
 services:
   dmv-scraper:
-    image: ghcr.io/tmcelroy2202/nc-dmv-scraper:latest
+    image: ghcr.io/benw5483/nc-dmv-scraper:latest
     container_name: nc-dmv-scraper
     environment:
       # --- IMPORTANT: Update this ---
       YOUR_DISCORD_WEBHOOK_URL: "YOUR_WEBHOOK_URL_HERE"
 
+      # --- Pushover Notifications (optional) ---
+      # PUSHOVER_USER_KEY: "your_pushover_user_key_here"
+      # PUSHOVER_API_TOKEN: "your_pushover_app_token_here"
+
       # --- Extra Configuration ---
       # remove the # before these lines to make them
-      # have an effect 
+      # have an effect
       # YOUR_ADDRESS: "1337 Testing Lane, Charlotte NC"
       # DISTANCE_RANGE: 50
       # DATE_RANGE_START: "03/23/2025"

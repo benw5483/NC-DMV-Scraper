@@ -100,7 +100,7 @@ That would fail, because it would only find the one with the -, and that would n
 You can also change this with docker by setting environment variables
 
 ```bash
-docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" -e APPOINTMENT_TYPE="Teen Driver Level 1" ghcr.io/tmcelroy2202/nc-dmv-scraper:latest
+docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" -e APPOINTMENT_TYPE="Teen Driver Level 1" ghcr.io/benw5483/nc-dmv-scraper:latest
 ```
 
 
@@ -190,13 +190,13 @@ PROOF_OF_LIFE = True
 
 In order to run a pre-built image
 ```bash
-docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" ghcr.io/tmcelroy2202/nc-dmv-scraper:latest
+docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" ghcr.io/benw5483/nc-dmv-scraper:latest
 ```
 
 To run via docker with custom filtering arguments, you would do, for example:
 
 ```bash
-docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" -e YOUR_ADDRESS="1337 Testing Lane, Charlotte NC" -e DISTANCE_RANGE=50 -e DATE_RANGE_START="03/23/2025" -e DATE_RANGE_END="09/23/2025" -e TIME_RANGE_START="8:00" -e TIME_RANGE_END="9:00" ghcr.io/tmcelroy2202/nc-dmv-scraper:latest
+docker run -e YOUR_DISCORD_WEBHOOK_URL="PUT_YOUR_WEBHOOK_URL_HERE" -e YOUR_ADDRESS="1337 Testing Lane, Charlotte NC" -e DISTANCE_RANGE=50 -e DATE_RANGE_START="03/23/2025" -e DATE_RANGE_END="09/23/2025" -e TIME_RANGE_START="8:00" -e TIME_RANGE_END="9:00" ghcr.io/benw5483/nc-dmv-scraper:latest
 ```
 
 or, if you wish to build the docker container locally, clone the repo, cd into it, and:
@@ -225,7 +225,7 @@ If you wish to customize the environment variables, they can be edited in docker
 ```yaml
 services:
   dmv-scraper:
-    image: ghcr.io/tmcelroy2202/nc-dmv-scraper:latest
+    image: ghcr.io/benw5483/nc-dmv-scraper:latest
     container_name: nc-dmv-scraper
     environment:
       # --- IMPORTANT: Update this ---

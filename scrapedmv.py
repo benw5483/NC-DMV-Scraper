@@ -19,6 +19,8 @@ import calendar
 # --- Configuration ---
 
 YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL", "YOUR_WEBHOOK_URL_HERE") # !!! REPLACE WITH YOUR ACTUAL WEBHOOK URL !!!
+PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
+PUSHOVER_API_TOKEN = os.getenv("PUSHOVER_API_TOKEN")
 GECKODRIVER_PATH = os.getenv('GECKODRIVER_PATH','YOUR_GECKODRIVER_PATH_HERE') # Replace with your geckodriver path
 
 # Can change address via environment values or manually edit this code 
@@ -282,6 +284,39 @@ def send_discord_notification(webhook_url, message_content):
         print("All Discord notification chunks sent.")
     else:
         print("Failed to send all Discord notification chunks.")
+
+
+def send_pushover_notification(message_content):
+    if not PUSHOVER_USER_KEY or not PUSHOVER_API_TOKEN:
+        return
+
+    if message_content is None:
+        if PROOF_OF_LIFE:
+            message = "No valid appointments found at this time."
+        else:
+            return
+    else:
+        message = INTRO_MESSAGE + message_content
+
+    # Pushover enforces a 1024 character message limit
+    if len(message) > 1024:
+        message = message[:1021] + "..."
+
+    try:
+        response = requests.post(
+            "https://api.pushover.net/1/messages.json",
+            data={
+                "token": PUSHOVER_API_TOKEN,
+                "user": PUSHOVER_USER_KEY,
+                "message": message,
+                "title": "NC DMV Appointments",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+        print("Pushover notification sent successfully.")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending Pushover notification: {e}")
 
 
 def format_results_for_discord(raw_results):
@@ -653,8 +688,10 @@ while True:
     if discord_message_content:
         print("Valid appointment times found. Sending notification...")
         send_discord_notification(YOUR_DISCORD_WEBHOOK_URL, discord_message_content)
+        send_pushover_notification(discord_message_content)
     else:
         send_discord_notification(YOUR_DISCORD_WEBHOOK_URL, None)
+        send_pushover_notification(None)
         print("No valid appointment times found in this run.")
 
     base_sleep = BASE_INTERVAL_MINUTES * 60
