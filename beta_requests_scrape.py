@@ -13,7 +13,7 @@ import random
 # --- Configuration ---
 
 # --- Notification Settings ---
-YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL", "YOUR_WEBHOOK_URL_HERE")
+YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL")
 PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
 PUSHOVER_API_TOKEN = os.getenv("PUSHOVER_API_TOKEN")
 PROOF_OF_LIFE = os.getenv("PROOF_OF_LIFE", "False").lower() == 'true'
@@ -342,8 +342,7 @@ def get_locations_within_distance(user_address_str, max_distance_miles_str, all_
 
 
 def send_discord_notification(webhook_url, message_content_to_send):
-    if not webhook_url or webhook_url == "YOUR_WEBHOOK_URL_HERE":
-        print("Webhook URL not configured. Skipping notification.")
+    if not webhook_url:
         return
 
     if message_content_to_send is None:
@@ -732,8 +731,8 @@ if __name__ == "__main__":
         print(f"Error loading or parsing '{LOCATIONS_JSON_FILE}': {e}")
         exit(1)
 
-    if YOUR_DISCORD_WEBHOOK_URL == "YOUR_WEBHOOK_URL_HERE":
-        print("!!! WARNING: Discord webhook URL is not set. Notifications will be skipped. !!!")
+    if not YOUR_DISCORD_WEBHOOK_URL and not (PUSHOVER_USER_KEY and PUSHOVER_API_TOKEN):
+        print("!!! WARNING: No notification method configured. Set YOUR_DISCORD_WEBHOOK_URL or PUSHOVER_USER_KEY + PUSHOVER_API_TOKEN. !!!")
 
     config = parse_and_validate_configs(all_locations_data_main)
     run_count = 0

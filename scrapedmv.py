@@ -18,7 +18,7 @@ import calendar
 
 # --- Configuration ---
 
-YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL", "YOUR_WEBHOOK_URL_HERE") # !!! REPLACE WITH YOUR ACTUAL WEBHOOK URL !!!
+YOUR_DISCORD_WEBHOOK_URL = os.getenv("YOUR_DISCORD_WEBHOOK_URL")
 PUSHOVER_USER_KEY = os.getenv("PUSHOVER_USER_KEY")
 PUSHOVER_API_TOKEN = os.getenv("PUSHOVER_API_TOKEN")
 GECKODRIVER_PATH = os.getenv('GECKODRIVER_PATH','YOUR_GECKODRIVER_PATH_HERE') # Replace with your geckodriver path
@@ -217,8 +217,7 @@ class options_loaded_in_select(object):
             return False
 
 def send_discord_notification(webhook_url, message_content):
-    if not webhook_url or webhook_url == "YOUR_WEBHOOK_URL_HERE":
-        print("Discord webhook URL not configured. Skipping notification.")
+    if not webhook_url:
         return
 
     if message_content == None and PROOF_OF_LIFE == True:
@@ -662,9 +661,8 @@ date_filter, dt_start, dt_end, time_filter, tm_start, tm_end = parse_datetime_fi
     TIME_RANGE_START_STR, TIME_RANGE_END_STR
 )
 
-if YOUR_DISCORD_WEBHOOK_URL == "YOUR_WEBHOOK_URL_HERE":
-    print("!!! WARNING: DISCORD WEBHOOK URL IS NOT SET. Notifications will be skipped. !!!")
-    print("!!! Edit the YOUR_DISCORD_WEBHOOK_URL variable in the script. !!!")
+if not YOUR_DISCORD_WEBHOOK_URL and not (PUSHOVER_USER_KEY and PUSHOVER_API_TOKEN):
+    print("!!! WARNING: No notification method configured. Set YOUR_DISCORD_WEBHOOK_URL or PUSHOVER_USER_KEY + PUSHOVER_API_TOKEN. !!!")
 
 while True:
     print(f"\n--- Starting run at {time.strftime('%Y-%m-%d %H:%M:%S')} ---")
